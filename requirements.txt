@@ -3,3 +3,5 @@ uvicorn
 pydantic-settings
 faster-whisper
 python-multipart
+pytesseract
+pillow
