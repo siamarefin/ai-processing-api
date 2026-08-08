@@ -1,6 +1,7 @@
-from fastapi import APIRouter, File, Form, UploadFile
+from fastapi import APIRouter, Depends, File, Form, UploadFile
 
-from app.adapters.ocr_adapter import TesseractOCRAdapter
+from app.adapters.ocr_provider import OCRProvider
+from app.dependencies import get_ocr_provider
 from app.schemas.response import DocumentExtractionResponse
 from app.services.document_service import DocumentService
 
@@ -18,6 +19,7 @@ router = APIRouter(
 async def extract_document(
     file: UploadFile = File(...),
     language: str = Form(default="eng"),
+    ocr_provider: OCRProvider = Depends(get_ocr_provider),
 ):
     contents = await file.read()
 
@@ -26,7 +28,6 @@ async def extract_document(
     with open(temp_path, "wb") as document_file:
         document_file.write(contents)
 
-    ocr_provider = TesseractOCRAdapter()
     service = DocumentService(ocr_provider)
 
     return service.extract_text(

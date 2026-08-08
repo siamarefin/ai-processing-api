@@ -1,10 +1,11 @@
 import re
 
-from app.adapters.ocr_adapter import TesseractOCRAdapter
+from app.adapters.ocr_provider import OCRProvider
 
 
 class DocumentService:
-    def __init__(self, ocr_provider: TesseractOCRAdapter):
+
+    def __init__(self, ocr_provider: OCRProvider):
         self.ocr_provider = ocr_provider
 
     def extract_text(self, image_path: str, language: str = "eng"):
@@ -85,7 +86,11 @@ class DocumentService:
         return None
 
     def _extract_lab_name(self, text: str):
-        lines = [line.strip() for line in text.splitlines() if line.strip()]
+        lines = [
+            line.strip()
+            for line in text.splitlines()
+            if line.strip()
+        ]
 
         for line in lines[:10]:
             if "HOSPITAL" in line.upper():
@@ -179,11 +184,9 @@ class DocumentService:
         value = value.strip()
         value = value.replace(",", "")
 
-        # Example: <0.5
         if value.startswith("<"):
             value = value[1:].strip()
 
-        # Example: >10
         if value.startswith(">"):
             value = value[1:].strip()
 
