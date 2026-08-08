@@ -5,3 +5,5 @@ faster-whisper
 python-multipart
 pytesseract
 pillow
+pytest
+httpx
