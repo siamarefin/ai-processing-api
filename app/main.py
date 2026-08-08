@@ -10,9 +10,13 @@ app = FastAPI(
     version="1.0.0",
 )
 
+app.include_router(
+    router=audio_router,
+)
 
-app.include_router(audio_router)
-app.include_router(document_router)
+app.include_router(
+    router=document_router,
+)
 
 
 @app.get("/")

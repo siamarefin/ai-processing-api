@@ -6,13 +6,13 @@ from app.services.document_service import DocumentService
 
 
 router = APIRouter(
-    prefix="/document",
+    prefix="/api/v1",
     tags=["Document"],
 )
 
 
 @router.post(
-    "/extract",
+    "/documents/extract",
     response_model=DocumentExtractionResponse,
 )
 async def extract_document(

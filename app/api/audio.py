@@ -8,7 +8,7 @@ from app.utils.validation import validate_audio_file
 
 
 router = APIRouter(
-    prefix="/audio",
+    prefix="/api/v1",
     tags=["Audio"],
 )
 
