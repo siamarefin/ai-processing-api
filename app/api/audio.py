@@ -1,3 +1,6 @@
+import os
+import tempfile
+
 from fastapi import APIRouter, Depends, File, Form, UploadFile
 
 from app.adapters.speech_provider import SpeechProvider
@@ -26,14 +29,35 @@ async def transcribe_audio(
 
     service = TranscriptionService(provider)
 
-    contents = await file.read()
+    temp_path = None
 
-    temp_path = f"/tmp/{file.filename}"
+    try:
+        contents = await file.read()
 
-    with open(temp_path, "wb") as audio_file:
-        audio_file.write(contents)
+        if not contents:
+            from fastapi import HTTPException
 
-    return service.transcribe(
-        audio_path=temp_path,
-        language=language,
-    )
+            raise HTTPException(
+                status_code=400,
+                detail="Audio file must not be empty.",
+            )
+
+        suffix = os.path.splitext(file.filename or "")[1].lower()
+
+        with tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=suffix,
+        ) as audio_file:
+            audio_file.write(contents)
+            temp_path = audio_file.name
+
+        return service.transcribe(
+            audio_path=temp_path,
+            language=language,
+        )
+
+    finally:
+        if temp_path and os.path.exists(temp_path):
+            os.remove(temp_path)
+
+        await file.close()
